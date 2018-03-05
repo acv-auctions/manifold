@@ -1,5 +1,13 @@
 # ACV Manifold: Django Thrift RPC Implementation
 
+- [ACV Manifold: Django Thrift RPC Implementation](#acv-manifold-django-thrift-rpc-implementation)
+  * [Thrift Guide](#thrift-guide)
+  * [Quickstart](#quickstart)
+      - [Handling RPC Calls](#handling-rpc-calls)
+      - [Thrift File as Python Module](#thrift-file-as-python-module)
+    + [RPC Server](#rpc-server)
+    + [Validating Thrift Structs & Exceptions](#validating-thrift-structs--exceptions)
+
 Manifold is a [Django](https://www.djangoproject.com) application designed by [ACV Auctions](https://acvauctions.com) that allows for easy creation and serving of an RPC server through a WSGI interface using [Gunicorn Thrift](https://github.com/eleme/gunicorn_thrift). Manifold uses [Apache Thrift](https://thrift.apache.org) to standardize message transmission. 
 
 It allows the Django project to define the Thrift file location and service to be defined in the settings file, which is shown below.
