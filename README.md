@@ -1,13 +1,5 @@
 # ACV Manifold: Django Thrift RPC Implementation
 
-- [ACV Manifold: Django Thrift RPC Implementation](#acv-manifold-django-thrift-rpc-implementation)
-  * [Thrift Guide](#thrift-guide)
-  * [Quickstart](#quickstart)
-      - [Handling RPC Calls](#handling-rpc-calls)
-      - [Thrift File as Python Module](#thrift-file-as-python-module)
-    + [RPC Server](#rpc-server)
-    + [Validating Thrift Structs & Exceptions](#validating-thrift-structs--exceptions)
-
 Manifold is a [Django](https://www.djangoproject.com) application designed by [ACV Auctions](https://acvauctions.com) that allows for easy creation and serving of an RPC server through a WSGI interface using [Gunicorn Thrift](https://github.com/eleme/gunicorn_thrift). Manifold uses [Apache Thrift](https://thrift.apache.org) to standardize message transmission. 
 
 It allows the Django project to define the Thrift file location and service to be defined in the settings file, which is shown below.
@@ -21,6 +13,17 @@ THRIFT = {
 ```
 
 With these settings, you can do a few things. Define Python functions to handle RPC calls, load the Thrift *in memory* as a Python module, and serve an RPC WSGI server in both development and production.
+
+## Table of Contents
+
+- [ACV Manifold: Django Thrift RPC Implementation](#acv-manifold-django-thrift-rpc-implementation)
+  * [Thrift Guide](#thrift-guide)
+  * [Quickstart](#quickstart)
+  * [Usage Guide](#usage-guide)
+    + [Handling RPC Calls](#handling-rpc-calls)
+    + [Thrift File as Python Module](#thrift-file-as-python-module)
+    + [RPC Server](#rpc-server)
+    + [Validating Thrift Structs & Exceptions](#validating-thrift-structs--exceptions)
 
 ## Thrift Guide
 For an introduction and in-depth description of Thrift, we recommend following [Thrift: The Missing Guide](https://diwakergupta.github.io/thrift-missing-guide/).
@@ -56,7 +59,11 @@ For an introduction and in-depth description of Thrift, we recommend following [
     gunicorn_thrift manifold.server.rpc:app -b 0.0.0.0:9090
     ```
 
-#### Handling RPC Calls
+## Usage Guide
+
+Below describes the basic usages of Manifold.
+
+### Handling RPC Calls
 
 Mapping and handling Thrift RPC functions works very similar to a Python
 Flask application. We create a **Service Handler**, which handles incoming Thrift
@@ -78,7 +85,7 @@ def schedule_job(job):
     return True
 ```
 
-#### Thrift File as Python Module
+### Thrift File as Python Module
 
 In the Django project, it will most likely be necessary to serialize and de-serialize Thrift structs. Manifold will automatically convert any passed in arguments to your mapped functions as Python classes. For example, let's say we have `Status` defined in our Thrift file, as we do below.
 
