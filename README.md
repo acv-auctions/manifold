@@ -1,4 +1,4 @@
-# ACV Manifold: Django Thrift RPC Implementation
+# Manifold: Django Thrift RPC Implementation
 
 Manifold is a [Django](https://www.djangoproject.com) application designed by [ACV Auctions](https://acvauctions.com) that allows for easy creation and serving of an RPC server through a WSGI interface using [Gunicorn Thrift](https://github.com/eleme/gunicorn_thrift). Manifold uses [Apache Thrift](https://thrift.apache.org) to standardize message transmission. 
 
@@ -16,7 +16,9 @@ With these settings, you can do a few things. Define Python functions to handle 
 
 ## Table of Contents
 
-- [ACV Manifold: Django Thrift RPC Implementation](#acv-manifold-django-thrift-rpc-implementation)
+- [Manifold: Django Thrift RPC Implementation](#manifold-django-thrift-rpc-implementation)
+  * [Table of Contents](#table-of-contents)
+  * [Credits and Maintenance](#credits-and-maintenance)
   * [Thrift Guide](#thrift-guide)
   * [Quickstart](#quickstart)
   * [Usage Guide](#usage-guide)
@@ -24,6 +26,12 @@ With these settings, you can do a few things. Define Python functions to handle 
     + [Thrift File as Python Module](#thrift-file-as-python-module)
     + [RPC Server](#rpc-server)
     + [Validating Thrift Structs & Exceptions](#validating-thrift-structs--exceptions)
+  * [Contributing Guide](#contributing-guide)
+  * [License](#license)
+  
+## Credits and Maintenance
+
+Manifold is built using [Django](https://www.djangoproject.com) and [Thriftpy](https://github.com/eleme/thriftpy), and is maintained by [ACV Auctions](https://www.acvauctions.com).
 
 ## Thrift Guide
 For an introduction and in-depth description of Thrift, we recommend following [Thrift: The Missing Guide](https://diwakergupta.github.io/thrift-missing-guide/).
@@ -226,3 +234,11 @@ def schedule_job(job):
     # thread will fail.
     return job_dict['non-existent-key']
 ```
+
+## Contributing Guide
+
+This project is developed and maintained by [ACV Auctions](https://www.acvauctions.com). We are always open to outside contributers helping to making Manifold better. To contribute, please **fork** this repository, make your changes, and create a **Pull Request** to merge your forked branch into the main master branch.
+
+## License
+
+Manifold is [BSD Licensed](https://github.com/acv-auctions/manifold/blob/master/LICENSE)
