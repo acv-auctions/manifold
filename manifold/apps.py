@@ -1,5 +1,5 @@
 from django.apps import AppConfig
 
 
-class DjangoThriftConfig(AppConfig):
-    name = 'django_thrift'
+class ManifoldConfig(AppConfig):
+    name = 'manifold'

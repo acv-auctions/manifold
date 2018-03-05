@@ -1,0 +1,4 @@
+Django==2.0.2
+ply==3.11
+pytz==2018.3
+thriftpy==0.3.9
