@@ -139,28 +139,52 @@ do below.
         2: string response
     }
 
-we can then use ``Status`` in our code by importing the
+Using ``thrift_module``
+-----------------------
+
+We can then use ``Status`` in our code by importing the
 ``thrift_module`` module from ``manifold.file``, which contains all of
-our structs and services we defined as Python classes. An example using
+our structs and services we defined as Python classes. You can simply 
+import or create instances directly through this module. An example using
 the ``Status`` struct is shown below.
 
 .. code:: python
 
-    from manifold.file import thrift_module
+    from manifold.file import new
 
     def perform_task(task):
       """Performs a task and returns a status
       :params:  Thrift struct Task instance
       :returns: Thrift struct Status instance
       """
-      try:
-          ret_value = perform_task(task)
-      except:
-          # Raise a Thrift defined exception
-          raise thrift_module.TaskException(error='Something went wrong!')
+      ret_value = perform_task(task)
 
       # Return a Thrift defined struct
       return thrift_module.Status(code=200, response=ret_value)
+      
+Using ``new`` shortcut
+-----------------------
+
+``thrift_module`` is good if you need low-level Thrift values, such as enums. 
+If you want a quicker shortcut to create Thrift objects, we can use the ``new`` 
+function from ``manifold.file``, which is a shortcut for ``thrift_module``.
+``new`` takes in the desired instance type as a string, followed by any 
+arguments (``*args``) and keyword arguments (``**kwargs``).
+An example using the ``Status`` struct is shown below.
+
+.. code:: python
+
+    from manifold.file import new
+
+    def perform_task(task):
+      """Performs a task and returns a status
+      :params:  Thrift struct Task instance
+      :returns: Thrift struct Status instance
+      """
+      ret_value = perform_task(task)
+
+      # Return a Thrift defined struct
+      return new('Status', code=200, response=ret_value)
 
 RPC Server
 ~~~~~~~~~~
@@ -174,7 +198,7 @@ It can be run with the following command:
 
 .. code:: bash
 
-    gunicorn_thrift manifold.server.rpc:app -b 0.0.0.0:9090
+    gunicorn_thrift manifold.rpc:app -b 0.0.0.0:9090
 
 which then serves a RPC server on 0.0.0.0:9090. The configuration of
 ``gunicorn_thrift`` follows many of ``gunicorn``'s configs.
