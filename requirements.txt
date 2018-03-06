@@ -1,3 +1,5 @@
+pytest
+newrelic
 Django==2.0.2
 ply==3.11
 pytz==2018.3

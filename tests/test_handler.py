@@ -1,19 +1,11 @@
 from unittest import mock
 
-from django.apps import apps
 from django.test import TestCase
 
-from django_thrift.apps import DjangoThriftConfig
-from django_thrift.handler import ServiceHandler
+from manifold.handler import ServiceHandler
 
 
-class AppTestSuite(TestCase):
-
-    def test_apps(self):
-        self.assertEqual(DjangoThriftConfig.name, 'django_thrift')
-        self.assertEqual(apps.get_app_config('django_thrift').name, 'django_thrift')
-
-
+# pylint: disable=W0612
 class ServiceHandlerTests(TestCase):
 
     def test_service_handler_mapping(self):
@@ -37,7 +29,7 @@ class ServiceHandlerTests(TestCase):
             def another_function():
                 return "Oops!"  # pragma: no cover
 
-    @mock.patch('django_thrift.handler.agent')
+    @mock.patch('manifold.handler.agent')
     def test_raise_new_relic_warning(self, mocked_agent):
         mocked_agent.set_transaction_name.side_effect = Exception(
             'Could not set New Relic Transaction'
@@ -50,4 +42,3 @@ class ServiceHandlerTests(TestCase):
             return "Hello World"
 
         self.assertEqual(handler.test_call(), "Hello World")
-

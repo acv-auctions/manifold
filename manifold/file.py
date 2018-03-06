@@ -1,10 +1,5 @@
-import os
-
 from django.conf import settings
 import thriftpy
-
-if not os.getenv("DJANGO_SETTINGS_MODULE", None):  # pragma: no cover
-    raise ValueError("'DJANGO_SETTINGS_MODULE' environment variable must exist!")
 
 thrift_module = thriftpy.load(
     settings.THRIFT["FILE"],
@@ -12,3 +7,13 @@ thrift_module = thriftpy.load(
 )
 
 thrift_service = getattr(thrift_module, settings.THRIFT["SERVICE"])
+
+
+def new(ttype, *args, **kwargs):
+    """Shortcut to create thrift structs
+    :param ttype: Thrift struct name as a string
+    :param args: Args to pass to constructor
+    :param kwargs: kwargs to pass to constructor
+    :return: instantiated object of `ttype`
+    """
+    return getattr(thrift_module, ttype)(*args, **kwargs)

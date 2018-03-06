@@ -3,9 +3,11 @@ import logging
 import os
 
 from django.conf import settings
-from django_thrift.handler import create_handler
-from django_thrift.file import thrift_service
-import newrelic.agent
+from django.core.wsgi import get_wsgi_application
+try:
+    from newrelic import agent
+except ImportError:
+    agent = None
 from thriftpy.protocol import TBinaryProtocolFactory
 from thriftpy.server import TThreadedServer
 from thriftpy.thrift import TProcessor
@@ -15,28 +17,35 @@ from thriftpy.transport import (
     TSSLServerSocket,
 )
 
+from manifold.handler import create_handler
+from manifold.file import thrift_service
 
-if not os.getenv("DJANGO_SETTINGS_MODULE", None):
-    raise ValueError("'DJANGO_SETTINGS_MODULE' environment variable must exist!")
 
 # Ensure settings are read
-from django.core.wsgi import get_wsgi_application
-application = get_wsgi_application()
+get_wsgi_application()
 
 
 def create_processor():
     """Creates a Gunicorn Thrift compatible TProcessor and initializes NewRelic
     """
 
-    try:
-        newrelic.agent.initialize()
-        logging.info('Initialized New Relic application')
-    except Exception as exc:
-        logging.warning('Could not wrap RPC server in New Relic config. Exc: %s', exc)
-
-    for app in [x for x in settings.INSTALLED_APPS if not x.startswith("django")]:
+    if agent:
         try:
-            importlib.import_module("%s.views" % app)
+            agent.initialize()
+            logging.info('Initialized New Relic application')
+        except Exception as exc:  # pylint: disable=all
+            logging.warning(
+                'Could not wrap RPC server in New Relic config. Exc: %s',
+                exc
+            )
+
+    installed_apps = [
+        x for x in settings.INSTALLED_APPS if not x.startswith("django")
+    ]
+
+    for installed_app in installed_apps:
+        try:
+            importlib.import_module("%s.views" % installed_app)
         except ImportError:
             logging.info(
                 'No module "%s.views" found, skipping RPC calls from it...',
