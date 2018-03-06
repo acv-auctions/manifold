@@ -1,6 +1,8 @@
 from django.test import TestCase
 
 from manifold import validators
+from manifold.file import new
+from manifold.serialize import serialize
 
 
 class I16FieldTestSuite(TestCase):
@@ -149,3 +151,27 @@ class MapFieldTestSuite(TestCase):
     def test_MapValidator_not_required_fields_None(self):
         valid_empty_form = self.MapNotRequiredValidator({'test': 0})
         self.assertTrue(valid_empty_form.is_valid())
+
+
+class ThriftValidatorTestSuite(TestCase):
+
+    class SomeValidator(validators.ThriftValidator):
+        test_string = validators.StringField()
+
+    def test_validator_init_struct(self):
+        thrift_struct = new('ExampleStruct', test_string='hello')
+        form = self.SomeValidator(thrift_struct)
+        self.assertTrue(form.is_valid())
+        self.assertEqual(form.get('test_string'), 'hello')
+
+    def test_validator_init_dict(self):
+        thrift_struct = new('ExampleStruct', test_string='hello')
+        form = self.SomeValidator(serialize(thrift_struct))
+        self.assertTrue(form.is_valid())
+        self.assertEqual(form.get('test_string'), 'hello')
+
+    def test_validator_get(self):
+        valid_form = self.SomeValidator({'test_string': 'hello'})
+        valid_form.is_valid()
+        self.assertEqual(valid_form.get('test_string'), 'hello')
+        self.assertFalse(valid_form.get('test_miss', default=False))

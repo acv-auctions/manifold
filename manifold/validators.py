@@ -1,13 +1,24 @@
 from django import forms
 from django.core.exceptions import ValidationError
 
+from manifold.serialize import serialize
+
 
 class ThriftValidator(forms.Form):
     """
     Base Validator for Thrift Structs.
     Expand upon this like you would a Django Form.
     """
-    pass
+    def __init__(self, struct, *args, **kwargs):
+        """Serializes Thrift struct if needed so it can be cleaned
+        """
+        self.struct = struct
+        if not isinstance(struct, dict):
+            struct = serialize(struct)
+        super().__init__(struct, *args, **kwargs)
+
+    def get(self, key, default=None):
+        return self.cleaned_data.get(key, default)
 
 
 class I16Field(forms.IntegerField):
@@ -66,9 +77,11 @@ class ListField(forms.Field):
     """Thrift Validator Field to validate a list object
     """
 
-    def __init__(self, *args, list_type=None, min_length=0, **kwargs):
+    def __init__(self, *args, list_type=None,
+                 min_length=0, max_length=None, **kwargs):
         self.list_type = list_type
         self.min_length = min_length
+        self.max_length = max_length
         super().__init__(*args, **kwargs)
 
     def clean(self, value):
@@ -85,6 +98,11 @@ class ListField(forms.Field):
                 f'ListField expected at least {self.min_length} items.'
             )
 
+        if self.max_length and len(value) > self.max_length:
+            raise ValidationError(
+                f'ListField expected at most {self.max_length} items.'
+            )
+
         if self.list_type:
             for index in value:
                 if not isinstance(index, self.list_type):
@@ -99,9 +117,11 @@ class SetField(forms.Field):
     """Thrift Validator Field to validate a set container
     """
 
-    def __init__(self, *args, set_type=None, min_length=0, **kwargs):
+    def __init__(self, *args,
+                 set_type=None, min_length=0, max_length=None, **kwargs):
         self.set_type = set_type
         self.min_length = min_length
+        self.max_length = max_length
         super().__init__(*args, **kwargs)
 
     def clean(self, value):
@@ -116,6 +136,11 @@ class SetField(forms.Field):
         if len(value) < self.min_length:
             raise ValidationError(
                 f'SetField expected at least {self.min_length} items.'
+            )
+
+        if self.max_length and len(value) > self.max_length:
+            raise ValidationError(
+                f'ListField expected at most {self.max_length} items.'
             )
 
         if self.set_type:
