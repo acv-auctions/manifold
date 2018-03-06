@@ -122,7 +122,7 @@ do below.
     }
 
 Using ``thrift_module``
------------------------
+***********************
 
 We can then use ``Status`` in our code by importing the
 ``thrift_module`` module from ``manifold.file``, which contains all of
@@ -145,7 +145,7 @@ the ``Status`` struct is shown below.
       return thrift_module.Status(code=200, response=ret_value)
       
 Using ``new`` shortcut
------------------------
+**********************
 
 ``thrift_module`` is good if you need low-level Thrift values, such as enums. 
 If you want a quicker shortcut to create Thrift objects, we can use the ``new`` 
