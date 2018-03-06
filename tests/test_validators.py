@@ -153,10 +153,18 @@ class MapFieldTestSuite(TestCase):
         self.assertTrue(valid_empty_form.is_valid())
 
 
+class InnerStructValidator(validators.ThriftValidator):
+    val = validators.I16Field()
+
+
 class ThriftValidatorTestSuite(TestCase):
 
     class SomeValidator(validators.ThriftValidator):
         test_string = validators.StringField()
+
+    class ComplexValidator(validators.ThriftValidator):
+        some_string = validators.StringField()
+        innerStruct = validators.StructField(InnerStructValidator)
 
     def test_validator_init_struct(self):
         thrift_struct = new('ExampleStruct', test_string='hello')
@@ -175,3 +183,27 @@ class ThriftValidatorTestSuite(TestCase):
         valid_form.is_valid()
         self.assertEqual(valid_form.get('test_string'), 'hello')
         self.assertFalse(valid_form.get('test_miss', default=False))
+
+    def test_inner_struct_validator(self):
+        i_struct = new('InnerStruct', val=123)
+        thrift_struct = new(
+            'ContainedStruct',
+            some_string='hello',
+            innerStruct=i_struct
+        )
+
+        validator = self.ComplexValidator(thrift_struct)
+        self.assertTrue(validator.is_valid(), validator.errors)
+
+        self.assertEqual(validator.get('innerStruct').get('val'), 123)
+
+    def test_inner_struct_validator_invalid(self):
+        i_struct = new('InnerStruct', val=999999)
+        thrift_struct = new(
+            'ContainedStruct',
+            some_string='hello',
+            innerStruct=i_struct
+        )
+
+        validator = self.ComplexValidator(thrift_struct)
+        self.assertFalse(validator.is_valid(), validator.errors)

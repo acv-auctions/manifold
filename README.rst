@@ -126,7 +126,7 @@ Using ``thrift_module``
 
 We can then use ``Status`` in our code by importing the
 ``thrift_module`` module from ``manifold.file``, which contains all of
-our structs and services we defined as Python classes. You can simply 
+our structs and services we defined as Python classes. You can simply
 import or create instances directly through this module. An example using
 the ``Status`` struct is shown below.
 
@@ -143,14 +143,14 @@ the ``Status`` struct is shown below.
 
       # Return a Thrift defined struct
       return thrift_module.Status(code=200, response=ret_value)
-      
+
 Using ``new`` shortcut
 **********************
 
-``thrift_module`` is good if you need low-level Thrift values, such as enums. 
-If you want a quicker shortcut to create Thrift objects, we can use the ``new`` 
+``thrift_module`` is good if you need low-level Thrift values, such as enums.
+If you want a quicker shortcut to create Thrift objects, we can use the ``new``
 function from ``manifold.file``, which is a shortcut for ``thrift_module``.
-``new`` takes in the desired instance type as a string, followed by any 
+``new`` takes in the desired instance type as a string, followed by any
 arguments (``*args``) and keyword arguments (``**kwargs``).
 An example using the ``Status`` struct is shown below.
 
@@ -214,7 +214,7 @@ We would then have a ``Form`` defined somewhere:
 
         # `some_values` must be int types, and the list must contain at least 1 item
         some_values = ListField(min_length=1, list_type=int)
-        
+
         other_value = StringField(required=False, max_length=128)
 
 and then we can use this in our code to provide a full Request and
@@ -240,13 +240,13 @@ Response function like so:
 
 Notice how we call ``is_valid()`` on our validator. Its very similar to
 `Django Forms <https://docs.djangoproject.com/en/2.0/topics/forms/>`__,
-because the validators actually are subclasses of ``django.forms``. It 
+because the validators actually are subclasses of ``django.forms``. It
 returns ``True`` when the passed parameters were validated, and ``False``
 otherwise.
 
 For ``ThriftValidator``s, you can use the following validation fields, which
 map very closely to the Thrift types. These can be imported from ``manifold.validators``.
-All fields can have ``required=True/False`` passed to them, on whether or not the field 
+All fields can have ``required=True/False`` passed to them, on whether or not the field
 is required. Note that the default is ``True``. Use ``False`` for Thrift ``optional`` fields.
 
 - ``I16Field``, ``I32Field``, ``I64Field``: All three represent integers where their values must within their specific bounds.
@@ -257,6 +257,7 @@ is required. Note that the default is ``True``. Use ``False`` for Thrift ``optio
 - ``ListField``: Represents a Thrift ``list<type>``. Can pass ``list_type=<Python type>`` to ensure list is of certain Python type, and ``min_length=<int>`` and ``max_length=<int>`` to ensure a certain number of values in the list.
 - ``SetField``: Represents a Thrift ``set<type>``. Can pass ``set_type=<Python type>`` to ensure list is of certain Python type, and ``min_length=<int>`` and ``max_length=<int>`` to ensure a certain number of values in the list.
 - ``MapField``: Represents a Thrift ``map<key_type, val_type>``. Can pass ``key_type`` and ``val_type`` to ensure type checking. Maps to a Python Dictionary.
+- ``StructField``: Described under **Complex Validation**.
 
 To retreive values from a validator, you can call ``.get(key, default=None)`` where ``key`` is the desired validator field, and the optional ``default`` is what to return if not found. Note that you must call ``is_valid`` before requesting any values. An example is shown below:
 
@@ -281,13 +282,64 @@ To retreive values from a validator, you can call ``.get(key, default=None)`` wh
 
 You can also get the ``struct`` attribute on the validator to get the originally passed data/struct. Validators can take in either the Thrift structs as their Python class instance, or as a serialized dictionary.
 
+Complex Validation
+******************
+
+If you have a situation where you have a Thrift struct that contains another Thrift struct, you will probably want to
+validate at every level. This would be when you want to use a ``manifold.validators.StructField``, which takes in a
+``manifold.validators.ThriftValidator`` subclass as its first parameter. It will verify the inner struct(s) first,
+before evaluating the parent. Let's say that you have the following somewhere in your Thrift file:
+
+.. code:: thrift
+    struct InnerStruct {
+        1: i16 val
+    }
+
+    struct ContainerStruct {
+        1: string some_string,
+        2: InnerStruct innerStruct
+    }
+
+We see that ``ContainerStruct`` has ``InnerStruct`` inside of it. To create a validator for this case, we can use
+the following:
+
+.. code:: python
+    from manifold.validators import ThriftValidator, I16Field, StringField, StructField
+
+    class InnerStructValidator(ThriftValidator):
+        val = I16Field()
+
+
+    class ContainerStructValidator(ThriftValidator):
+        some_string = StringField()
+        innerStruct = StructField(InnerStructValidator)
+
+Note how since ``InnerStructValidator`` is also a ``ThriftValidator``, that means we can use it on it's own to validate
+*just* ``InnerStruct``s, but we can also chain validators together into more complex entities. Back to the example, we
+can then check a ``ContainerStruct`` like so:
+
+
+.. code:: python
+    # Validators defined above
+
+    # Create the structs
+    inner_struct = new('InnerStruct', val=123)
+    container = new('ContainerStruct', innerStruct=inner_struct, some_string='example')
+
+    # Validate `container`
+    validator = ContainerStructValidator(container)
+    if not validator.is_valid():
+        return validator.errors.items()  # Return errors as a dict
+
+    # Continue doing things...
+
 
 Raising Thrift Exceptions
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 In the previous example, notice how if ``job`` is not valid, we return False. What if
-we wanted to raise an exception for the caller? We could define a ``JobException`` in 
-the Thrift file to raise when something unexpected happens with a job. 
+we wanted to raise an exception for the caller? We could define a ``JobException`` in
+the Thrift file to raise when something unexpected happens with a job.
 
 .. code:: thrift
 
@@ -357,9 +409,9 @@ inevitable ``KeyError``.
         validator = JobTemplateValidator(job)
         if not validator.is_valid():
             raise thrift_module.JobException(error='Invalid Job specified!')
-            
+
         job_dict = job_to_dict(job)  # Some code to turn a Job into Python dictionary
-        
+
         # The following will raise a KeyError if the key does not exist, and the caller
         # will be notified that they lost contact with the RPC server as the Python
         # thread will fail.

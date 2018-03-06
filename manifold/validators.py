@@ -1,3 +1,5 @@
+from inspect import isclass
+
 from django import forms
 from django.core.exceptions import ValidationError
 
@@ -183,3 +185,26 @@ class MapField(forms.Field):
                         f'All MapField vals must be {self.val_type}'
                     )
         return value
+
+
+class StructField(forms.Field):
+
+    def __init__(self, validator_class, *args, **kwargs):
+        if not isclass(validator_class) or \
+                not issubclass(validator_class, ThriftValidator):
+            raise TypeError(
+                'StructField first argument must be ThriftValidator subclass!'
+            )
+        self.validator_class = validator_class
+        super().__init__(*args, **kwargs)
+
+    def clean(self, value):
+        value = super().clean(value)
+        validator = self.validator_class(value)
+        if not validator.is_valid():
+            errors = {field: err for field, err in validator.errors.items()}
+            raise ValidationError(
+                f'{self.validator_class} failed validation: {errors}'
+            )
+
+        return validator.cleaned_data

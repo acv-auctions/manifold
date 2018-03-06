@@ -4,11 +4,11 @@ struct ExampleStruct {
 }
 
 struct InnerStruct {
-    1: string some_string
+    1: i16 val
 }
 
 struct ContainedStruct {
-    1: i16 val,
+    1: string some_string,
     2: InnerStruct innerStruct
 }
 

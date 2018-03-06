@@ -48,15 +48,16 @@ class SerializeTestSuite(TestCase):
     def test_object_serializer(self):
 
         expected = {
-            'val': 123,
+            'some_string': 'hello world',
             'innerStruct': {
-                'some_string': 'hello world'
+                'val': 123,
+
             }
         }
         test_struct = new(
             'ContainedStruct',
-            val=123,
-            innerStruct=new('InnerStruct', some_string='hello world')
+            some_string='hello world',
+            innerStruct=new('InnerStruct', val=123,)
         )
 
         result = serialize(test_struct)
