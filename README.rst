@@ -279,6 +279,8 @@ To retreive values from a validator, you can call ``.get(key, default=None)`` wh
         job_boolean = validator.get('some_bool_field', default=False)
         return job_boolean
 
+You can also get the ``struct`` attribute on the validator to get the originally passed data/struct. Validators can take in either the Thrift structs as their Python class instance, or as a serialized dictionary.
+
 
 Raising Thrift Exceptions
 ~~~~~~~~~~~~~~~~~~~~~~~~~
