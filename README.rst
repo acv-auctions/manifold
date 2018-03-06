@@ -23,25 +23,7 @@ With these settings, you can do a few things. Define Python functions to
 handle RPC calls, load the Thrift *in memory* as a Python module, and
 serve an RPC WSGI server in both development and production.
 
-Table of Contents
------------------
-
--  `Manifold: Django Thrift RPC
-   Implementation <#manifold-django-thrift-rpc-implementation>`__
--  `Table of Contents <#table-of-contents>`__
--  `Credits and Maintenance <#credits-and-maintenance>`__
--  `Thrift Guide <#thrift-guide>`__
--  `Quickstart <#quickstart>`__
--  `Usage Guide <#usage-guide>`__
-
-   -  `Handling RPC Calls <#handling-rpc-calls>`__
-   -  `Thrift File as Python Module <#thrift-file-as-python-module>`__
-   -  `RPC Server <#rpc-server>`__
-   -  `Validating Thrift Structs &
-      Exceptions <#validating-thrift-structs--exceptions>`__
-
--  `Contributing Guide <#contributing-guide>`__
--  `License <#license>`__
+.. contents:: Table of Contents
 
 Credits and Maintenance
 -----------------------
