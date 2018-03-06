@@ -217,7 +217,7 @@ We would then have a ``Form`` defined somewhere:
         
         other_value = StringField(required=False, max_length=128)
 
-and then we can use this in our code to provide a full Request -->
+and then we can use this in our code to provide a full Request and
 Response function like so:
 
 .. code:: python
@@ -235,18 +235,57 @@ Response function like so:
         """
         validator = JobTemplateValidator(job)
         if not validator.is_valid():
-            raise thrift_module.JobException(error='Invalid Job specified!')
+            return False
         return True
 
 Notice how we call ``is_valid()`` on our validator. Its very similar to
 `Django Forms <https://docs.djangoproject.com/en/2.0/topics/forms/>`__,
-because the validators actually are subclasses of ``django.forms``.
+because the validators actually are subclasses of ``django.forms``. It 
+returns ``True`` when the passed parameters were validated, and ``False``
+otherwise.
 
-Also, notice how if ``job`` is not valid, we ``raise`` a
-``thrift_module.JobException``. Manifold will catch any Thrift defined
-exceptions and will return them as a response for the calling client to
-handle. So for the example, we would have a ``JobException`` defined in
-our Thrift interface like so:
+For ``ThriftValidator``s, you can use the following validation fields, which
+map very closely to the Thrift types. These can be imported from ``manifold.validators``.
+All fields can have ``required=True/False`` passed to them, on whether or not the field 
+is required. Note that the default is ``True``. Use ``False`` for Thrift ``optional`` fields.
+
+- ``I16Field``, ``I32Field``, ``I64Field``: All three represent integers where their values must within their specific bounds.
+- ``BoolField``: Represents a Thrift ``bool``. Use ``required=False`` if the value can be either True of False, else it will always need to be True.
+- ``DoubleField``: Represents a Thrift ``double``. Use ``min_value`` and ``max_value`` to ensure range.
+- ``StringField``: Represents a Thrift ``string``. Use ``max_length`` and ``min_length`` to ensure length.
+- ``ByteField``: Represents a Thrift ``byte``. Gets represented as a Python integer between 0 and 256.
+- ``ListField``: Represents a Thrift ``list<type>``. Can pass ``list_type=<Python type>`` to ensure list is of certain Python type, and ``min_length=<int>`` and ``max_length=<int>`` to ensure a certain number of values in the list.
+- ``SetField``: Represents a Thrift ``set<type>``. Can pass ``set_type=<Python type>`` to ensure list is of certain Python type, and ``min_length=<int>`` and ``max_length=<int>`` to ensure a certain number of values in the list.
+- ``MapField``: Represents a Thrift ``map<key_type, val_type>``. Can pass ``key_type`` and ``val_type`` to ensure type checking. Maps to a Python Dictionary.
+
+To retreive values from a validator, you can call ``.get(key, default=None)`` where ``key`` is the desired validator field, and the optional ``default`` is what to return if not found. Note that you must call ``is_valid`` before requesting any values. An example is shown below:
+
+.. code:: python
+
+    from manifold.handler import create_handler
+    from validators import JobTemplateValidator
+
+    # Create an RPC Service Handler to serve routes
+    handler = create_handler()
+
+    # Map the Thrift function 'schedule' to this function
+    @handler.map_function('schedule')
+    def schedule_job(job):
+        """Schedule a service job to run
+        """
+        validator = JobTemplateValidator(job)
+        if not validator.is_valid():
+            return False
+        job_boolean = validator.get('some_bool_field', default=False)
+        return job_boolean
+
+
+Raising Thrift Exceptions
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In the previous example, notice how if ``job`` is not valid, we return False. What if
+we wanted to raise an exception for the caller? We could define a ``JobException`` in 
+the Thrift file to raise when something unexpected happens with a job. 
 
 .. code:: thrift
 
@@ -266,6 +305,31 @@ our Thrift interface like so:
         // throw a JobException that will be handled by the caller
         bool schedule(1: Job job) throws (1: JobException jobException),
     }
+
+We will then change ``return False`` to now ``raise`` a
+``thrift_module.JobException``. Manifold will catch any Thrift defined
+exceptions and will return them as a response for the calling client to
+handle. So for the example, we would have a ``JobException`` defined in
+our Thrift interface like so:
+
+.. code:: python
+
+    from manifold.handler import create_handler
+    from validators import JobTemplateValidator
+
+    # Create an RPC Service Handler to serve routes
+    handler = create_handler()
+
+    # Map the Thrift function 'schedule' to this function
+    @handler.map_function('schedule')
+    def schedule_job(job):
+        """Schedule a service job to run
+        """
+        validator = JobTemplateValidator(job)
+        if not validator.is_valid():
+            raise new('JobException', error='Job was invalid!')
+        return True
+
 
 Manifold will return raised Thrift exceptions to the caller, but will
 locally raise any uncaught Python, non-Thrift defined exceptions. So for
