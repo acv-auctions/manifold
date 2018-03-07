@@ -49,7 +49,7 @@ def create_processor():
         except ImportError:
             logging.info(
                 'No module "%s.views" found, skipping RPC calls from it...',
-                app
+                installed_app
             )
 
     return TProcessor(thrift_service, create_handler())
