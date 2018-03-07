@@ -1,9 +1,8 @@
 import importlib
 import logging
-import os
 
+import django
 from django.conf import settings
-from django.core.wsgi import get_wsgi_application
 try:
     from newrelic import agent
 except ImportError:
@@ -22,7 +21,7 @@ from manifold.file import thrift_service
 
 
 # Ensure settings are read
-get_wsgi_application()
+django.setup()
 
 
 def create_processor():
@@ -52,7 +51,12 @@ def create_processor():
                 installed_app
             )
 
-    return TProcessor(thrift_service, create_handler())
+    handler = create_handler()
+    print('** Manifold RPC Function Mappings **')
+    for mapped_name in handler.mapped_names:
+        print(f'- {mapped_name} --> {getattr(handler, mapped_name).__name__}')
+
+    return TProcessor(thrift_service, handler)
 
 
 def make_server(host="localhost", port=9090, unix_socket=None,
