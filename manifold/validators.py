@@ -23,6 +23,10 @@ class ThriftValidator(forms.Form):
         return self.cleaned_data.get(key, default)
 
 
+class Field(forms.Field):
+    pass
+
+
 class I16Field(forms.IntegerField):
 
     MIN_VALUE = -32768

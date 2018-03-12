@@ -8,4 +8,4 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
 
-        rpc.make_server(*args, **options)
+        rpc.make_server()

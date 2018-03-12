@@ -52,9 +52,10 @@ def create_processor():
             )
 
     handler = create_handler()
-    print('** Manifold RPC Function Mappings **')
+    print('\n** Manifold RPC Function Mappings **')
     for mapped_name in handler.mapped_names:
-        print(f'- {mapped_name} --> {getattr(handler, mapped_name).__name__}')
+        print(f'* {mapped_name} -- {getattr(handler, mapped_name).__name__}')
+    print()
 
     return TProcessor(thrift_service, handler)
 
