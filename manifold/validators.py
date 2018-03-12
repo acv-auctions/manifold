@@ -23,6 +23,10 @@ class ThriftValidator(forms.Form):
         return self.cleaned_data.get(key, default)
 
 
+class ThriftException(forms.ValidationError):
+    pass
+
+
 class Field(forms.Field):
     pass
 
