@@ -24,6 +24,20 @@ from manifold.file import thrift_service
 django.setup()
 
 
+__configured = False
+
+
+def print_rpc_config(handler):
+    global __configured
+    if __configured:
+        return
+    print('\n** Manifold RPC Function Mappings **')
+    for mapped_name in handler.mapped_names:
+        print(f'* {mapped_name} -- {getattr(handler, mapped_name).__name__}')
+    print()
+    __configured = True
+
+
 def create_processor():
     """Creates a Gunicorn Thrift compatible TProcessor and initializes NewRelic
     """
@@ -38,24 +52,19 @@ def create_processor():
                 exc
             )
 
-    installed_apps = [
-        x for x in settings.INSTALLED_APPS if not x.startswith("django")
-    ]
-
-    for installed_app in installed_apps:
+    for i_app in settings.INSTALLED_APPS:
+        if i_app.startswith('django') or 'manifold' in i_app:
+            continue
         try:
-            importlib.import_module("%s.views" % installed_app)
+            importlib.import_module("%s.views" % i_app)
         except ImportError:
             logging.info(
                 'No module "%s.views" found, skipping RPC calls from it...',
-                installed_app
+                i_app
             )
 
     handler = create_handler()
-    print('\n** Manifold RPC Function Mappings **')
-    for mapped_name in handler.mapped_names:
-        print(f'* {mapped_name} -- {getattr(handler, mapped_name).__name__}')
-    print()
+    print_rpc_config(handler)
 
     return TProcessor(thrift_service, handler)
 
