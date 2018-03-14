@@ -31,6 +31,10 @@ class GenericField(forms.Field):
     pass
 
 
+class EnumField(forms.ChoiceField):
+    pass
+
+
 class I16Field(forms.IntegerField):
 
     MIN_VALUE = -32768
