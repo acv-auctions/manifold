@@ -27,7 +27,7 @@ class ThriftException(forms.ValidationError):
     pass
 
 
-class Field(forms.Field):
+class GenericField(forms.Field):
     pass
 
 
