@@ -1,7 +1,7 @@
 from django.test import TestCase
 
 from manifold import validators
-from manifold.file import new
+from manifold.file import load_module
 from manifold.serialize import serialize
 
 
@@ -159,6 +159,8 @@ class InnerStructValidator(validators.ThriftValidator):
 
 class ThriftValidatorTestSuite(TestCase):
 
+    module = load_module()
+
     class SomeValidator(validators.ThriftValidator):
         test_string = validators.StringField()
 
@@ -167,13 +169,13 @@ class ThriftValidatorTestSuite(TestCase):
         innerStruct = validators.StructField(InnerStructValidator)
 
     def test_validator_init_struct(self):
-        thrift_struct = new('ExampleStruct', test_string='hello')
+        thrift_struct = self.module.ExampleStruct(test_string='hello')
         form = self.SomeValidator(thrift_struct)
         self.assertTrue(form.is_valid())
         self.assertEqual(form.get('test_string'), 'hello')
 
     def test_validator_init_dict(self):
-        thrift_struct = new('ExampleStruct', test_string='hello')
+        thrift_struct = self.module.ExampleStruct(test_string='hello')
         form = self.SomeValidator(serialize(thrift_struct))
         self.assertTrue(form.is_valid())
         self.assertEqual(form.get('test_string'), 'hello')
@@ -185,9 +187,8 @@ class ThriftValidatorTestSuite(TestCase):
         self.assertFalse(valid_form.get('test_miss', default=False))
 
     def test_inner_struct_validator(self):
-        i_struct = new('InnerStruct', val=123)
-        thrift_struct = new(
-            'ContainedStruct',
+        i_struct = self.module.InnerStruct(val=123)
+        thrift_struct = self.module.ContainedStruct(
             some_string='hello',
             innerStruct=i_struct
         )
@@ -198,9 +199,8 @@ class ThriftValidatorTestSuite(TestCase):
         self.assertEqual(validator.get('innerStruct').get('val'), 123)
 
     def test_inner_struct_validator_invalid(self):
-        i_struct = new('InnerStruct', val=999999)
-        thrift_struct = new(
-            'ContainedStruct',
+        i_struct = self.module.InnerStruct(val=999999)
+        thrift_struct = self.module.ContainedStruct(
             some_string='hello',
             innerStruct=i_struct
         )
