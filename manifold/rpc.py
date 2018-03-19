@@ -8,6 +8,7 @@ try:
 except ImportError:
     agent = None
 from thriftpy.protocol import TBinaryProtocolFactory
+from thriftpy.rpc import make_client as thrift_client
 from thriftpy.server import TThreadedServer
 from thriftpy.thrift import TProcessor
 from thriftpy.transport import (
@@ -16,8 +17,8 @@ from thriftpy.transport import (
     TSSLServerSocket,
 )
 
-from manifold.handler import create_handler
-from manifold.file import thrift_service
+from manifold.handler import handler
+from manifold.file import load_service
 
 
 # Ensure settings are read
@@ -25,15 +26,15 @@ django.setup()
 
 
 __configured = False
+__new_relic = False
 
 
-def print_rpc_config(handler):
+def _print_rpc_config(handler):
     global __configured
     if __configured:
         return
     print('\n** Manifold RPC Function Mappings **')
-    for mapped_name in handler.mapped_names:
-        print(f'* {mapped_name} -- {getattr(handler, mapped_name).__name__}')
+    handler.print_current_mappings()
     print()
     __configured = True
 
@@ -41,11 +42,13 @@ def print_rpc_config(handler):
 def create_processor():
     """Creates a Gunicorn Thrift compatible TProcessor and initializes NewRelic
     """
+    global __new_relic
 
-    if agent:
+    if agent and not __new_relic:
         try:
             agent.initialize()
             logging.info('Initialized New Relic application')
+            __new_relic = True
         except Exception as exc:  # pylint: disable=all
             logging.warning(
                 'Could not wrap RPC server in New Relic config. Exc: %s',
@@ -63,10 +66,9 @@ def create_processor():
                 i_app
             )
 
-    handler = create_handler()
-    print_rpc_config(handler)
+    _print_rpc_config(handler)
 
-    return TProcessor(thrift_service, handler)
+    return TProcessor(load_service(), handler)
 
 
 def make_server(host="localhost", port=9090, unix_socket=None,
@@ -96,14 +98,23 @@ def make_server(host="localhost", port=9090, unix_socket=None,
                              iprot_factory=proto_factory,
                              itrans_factory=trans_factory)
 
-    print('Starting Thrift RPC server running @ %s:%s' % (host, port))
-
     try:
-        server.serve()
+        return server
     except KeyboardInterrupt:
         print()
         print("Stopping Server from Keyboard Interruption")
         exit()
+
+
+def make_client(key='default'):
+    """Creates a client to call functions with
+    :param key: Settings key to create client with
+    :return: Thriftpy client
+    """
+    thrift_settings = settings.MANIFOLD[key]
+    host = thrift_settings.get('host', '127.0.0.1')
+    port = thrift_settings.get('port', 9090)
+    return thrift_client(load_service(key), host=host, port=port)
 
 
 app = create_processor()
