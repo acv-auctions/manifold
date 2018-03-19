@@ -98,5 +98,4 @@ Request** to merge your forked branch into the main master branch.
 License
 -------
 
-Manifold is `BSD
-Licensed <https://github.com/acv-auctions/manifold/blob/master/LICENSE>`__
+Manifold is `Apache 2.0 Licensed <https://github.com/acv-auctions/manifold/blob/master/LICENSE>`__
