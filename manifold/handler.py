@@ -47,14 +47,17 @@ class ServiceHandler:
                 agent.set_transaction_name(name)
             except: # pylint: disable=all
                 logging.warning(
-                    'Could not set New Relic transaction name.'
+                    'Could not set New Relic transaction name. '
                     'Is it installed and configured?'
                 )
 
         return object.__getattribute__(self, name)
 
 
-def create_handler():
+def __create_handler():
     if not ServiceHandler.instance:
         ServiceHandler.instance = ServiceHandler()
     return ServiceHandler.instance
+
+
+handler = __create_handler()

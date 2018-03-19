@@ -14,7 +14,7 @@ service to be defined in the settings file, which is shown below.
 .. code:: python
 
     # Thrift Configurations
-    THRIFT = {
+    MANIFOLD = {
         'FILE': os.path.join(BASE_DIR, 'notification_service.thrift'),
         'SERVICE': 'NotificationService'
     }
@@ -56,7 +56,7 @@ Quickstart
    .. code:: python
 
        # Thrift Configurations
-       THRIFT = {
+       MANIFOLD = {
            # Path to Thrift file, either absolute or relative
            'FILE': os.path.join(BASE_DIR, 'path/to/service.thrift'),
 

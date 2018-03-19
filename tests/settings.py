@@ -14,7 +14,7 @@ INSTALLED_APPS = [
     'manifold',
     'tests.example_app'
 ]
-THRIFT = {
+MANIFOLD = {
     'default': {
         'file': 'tests/example.thrift',
         'service': 'ExampleService'

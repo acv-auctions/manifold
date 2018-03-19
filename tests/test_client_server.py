@@ -8,7 +8,7 @@ from manifold.rpc import make_server, make_client
 
 class FileTestSuite(TestCase):
 
-    SLEEP = 3
+    SLEEP = 2
 
     server = None
 

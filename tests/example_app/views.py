@@ -1,7 +1,4 @@
-from manifold.handler import create_handler
-
-
-handler = create_handler()
+from manifold.handler import handler
 
 
 @handler.map_function('pingPong')

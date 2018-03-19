@@ -17,7 +17,7 @@ from thriftpy.transport import (
     TSSLServerSocket,
 )
 
-from manifold.handler import create_handler
+from manifold.handler import handler
 from manifold.file import load_service
 
 
@@ -66,7 +66,6 @@ def create_processor():
                 i_app
             )
 
-    handler = create_handler()
     _print_rpc_config(handler)
 
     return TProcessor(load_service(), handler)
@@ -112,7 +111,7 @@ def make_client(key='default'):
     :param key: Settings key to create client with
     :return: Thriftpy client
     """
-    thrift_settings = settings.THRIFT[key]
+    thrift_settings = settings.MANIFOLD[key]
     host = thrift_settings.get('host', '127.0.0.1')
     port = thrift_settings.get('port', 9090)
     return thrift_client(load_service(key), host=host, port=port)
