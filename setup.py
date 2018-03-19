@@ -20,7 +20,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 setup(
     name='django-manifold',
     version='1.0',
-    packages=find_packages(),
+    packages=find_packages(exclude=EXCLUDE_PACKAGES),
     include_package_data=True,
     license='BSD License',  # example license
     description=DESCRIPTION,
@@ -28,6 +28,11 @@ setup(
     url='https://www.acvauctions.com',
     author='Daniel Starner',
     author_email='dstarner@acvauctions.com',
+    install_requires=[
+        'Django==2.0.2',
+        'gunicorn-thrift==0.2.21',
+        'thriftpy==0.3.9'
+    ],
     classifiers=[
         'Environment :: Web Environment',
         'Framework :: Django',
