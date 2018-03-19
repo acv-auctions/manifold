@@ -1,4 +1,3 @@
-# pylint: disable=W0401,W0614
 """
 Copyright 2018 ACV Auctions
 
@@ -14,6 +13,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
+# pylint: disable=W0401,W0614
+
 from django.conf.global_settings import *
 
 DEBUG = True
