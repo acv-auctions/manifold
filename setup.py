@@ -4,6 +4,13 @@ from setuptools import find_packages, setup
 DESCRIPTION = "A python library that implements a thrift parser into Django to use it's models and controllers to " \
               "implement RPC/HTTP services. "
 
+EXCLUDE_PACKAGES = [
+    "*.tests",
+    "*.tests.*",
+    "tests.*",
+    "tests",
+]
+
 with open(os.path.join(os.path.dirname(__file__), 'README.rst')) as readme:
     README = readme.read()
 
@@ -12,7 +19,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='django-manifold',
-    version='0.1.10',
+    version='1.0',
     packages=find_packages(),
     include_package_data=True,
     license='BSD License',  # example license

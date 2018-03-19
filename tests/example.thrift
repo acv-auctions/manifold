@@ -1,3 +1,8 @@
+exception ExampleException {
+    1: string error,
+}
+
+
 struct ExampleStruct {
     1: string test_string,
     2: bool test_bool = true
@@ -13,5 +18,5 @@ struct ContainedStruct {
 }
 
 service ExampleService {
-
+    bool pingPong(1: i16 val),
 }

@@ -11,4 +11,13 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         if os.environ.get('RUN_MAIN') == 'true':
             return
-        rpc.make_server()
+
+        host = options.get('host', '127.0.0.1')
+        port = options.get('port', 9090)
+
+        self.stdout.write(
+            'Starting Thrift RPC server running @ %s:%s' % (host, port)
+        )
+
+        server = rpc.make_server()
+        server.serve()

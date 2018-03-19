@@ -8,6 +8,7 @@ try:
 except ImportError:
     agent = None
 from thriftpy.protocol import TBinaryProtocolFactory
+from thriftpy.rpc import make_client as thrift_client
 from thriftpy.server import TThreadedServer
 from thriftpy.thrift import TProcessor
 from thriftpy.transport import (
@@ -17,7 +18,7 @@ from thriftpy.transport import (
 )
 
 from manifold.handler import create_handler
-from manifold.file import thrift_service
+from manifold.file import load_service
 
 
 # Ensure settings are read
@@ -27,13 +28,12 @@ django.setup()
 __configured = False
 
 
-def print_rpc_config(handler):
+def _print_rpc_config(handler):
     global __configured
     if __configured:
         return
     print('\n** Manifold RPC Function Mappings **')
-    for mapped_name in handler.mapped_names:
-        print(f'* {mapped_name} -- {getattr(handler, mapped_name).__name__}')
+    handler.print_current_mappings()
     print()
     __configured = True
 
@@ -64,9 +64,9 @@ def create_processor():
             )
 
     handler = create_handler()
-    print_rpc_config(handler)
+    _print_rpc_config(handler)
 
-    return TProcessor(thrift_service, handler)
+    return TProcessor(load_service(), handler)
 
 
 def make_server(host="localhost", port=9090, unix_socket=None,
@@ -96,14 +96,23 @@ def make_server(host="localhost", port=9090, unix_socket=None,
                              iprot_factory=proto_factory,
                              itrans_factory=trans_factory)
 
-    print('Starting Thrift RPC server running @ %s:%s' % (host, port))
-
     try:
-        server.serve()
+        return server
     except KeyboardInterrupt:
         print()
         print("Stopping Server from Keyboard Interruption")
         exit()
+
+
+def make_client(key='default'):
+    """Creates a client to call functions with
+    :param key: Settings key to create client with
+    :return: Thriftpy client
+    """
+    thrift_settings = settings.THRIFT[key]
+    host = thrift_settings.get('host', '127.0.0.1')
+    port = thrift_settings.get('port', 9090)
+    return thrift_client(load_service(key), host=host, port=port)
 
 
 app = create_processor()

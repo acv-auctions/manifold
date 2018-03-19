@@ -1,13 +1,15 @@
 from django.test import TestCase
 
-from manifold.file import thrift_module, new
+from manifold.file import load_module, new
 from manifold.serialize import serialize
 
 
 class FileTestSuite(TestCase):
 
+    thrift_module = load_module()
+
     def test_thrift_module(self):
-        struct = thrift_module.ExampleStruct(
+        struct = self.thrift_module.ExampleStruct(
             test_string="hello",
             test_bool=True
         )
@@ -15,14 +17,23 @@ class FileTestSuite(TestCase):
         self.assertTrue(struct.test_bool)
 
     def test_default_thrift_module(self):
-        struct = thrift_module.ExampleStruct(test_string="hello")
+        struct = self.thrift_module.ExampleStruct(test_string="hello")
         self.assertEqual(struct.test_string, "hello")
         self.assertTrue(struct.test_bool)
 
     def test_new(self):
-        expected = thrift_module.ExampleStruct(test_string="hello")
+        expected = self.thrift_module.ExampleStruct(test_string="hello")
         result = new('ExampleStruct', test_string="hello")
         self.assertEqual(expected, result)
+
+    def test_not_default(self):
+        thrift = load_module('non-default')
+        struct = thrift.Secondary(val=64)
+        self.assertEqual(struct.val, 64)
+
+    def test_not_default_new(self):
+        struct = new('Secondary', key='non-default', val=64)
+        self.assertEqual(struct.val, 64)
 
 
 class SerializeTestSuite(TestCase):

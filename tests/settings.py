@@ -1,3 +1,7 @@
+# pylint: disable=W0401,W0614
+from django.conf.global_settings import *
+
+DEBUG = True
 DEBUG_PROPAGATE_EXCEPTIONS = True
 DATABASES = {
     'default': {
@@ -7,9 +11,18 @@ DATABASES = {
 }
 SECRET_KEY = 'not very secret in tests'
 INSTALLED_APPS = [
-    'manifold'
+    'manifold',
+    'tests.example_app'
 ]
 THRIFT = {
-    'FILE': 'tests/example.thrift',
-    'SERVICE': 'ExampleService'
+    'default': {
+        'file': 'tests/example.thrift',
+        'service': 'ExampleService'
+    },
+    'non-default': {
+        'file': 'tests/secondary.thrift',
+        'service': 'DummyService',
+        'host': '127.0.0.1',
+        'port': 9090
+    }
 }
