@@ -26,6 +26,7 @@ django.setup()
 
 
 __configured = False
+__new_relic = False
 
 
 def _print_rpc_config(handler):
@@ -41,11 +42,13 @@ def _print_rpc_config(handler):
 def create_processor():
     """Creates a Gunicorn Thrift compatible TProcessor and initializes NewRelic
     """
+    global __new_relic
 
-    if agent:
+    if agent and not __new_relic:
         try:
             agent.initialize()
             logging.info('Initialized New Relic application')
+            __new_relic = True
         except Exception as exc:  # pylint: disable=all
             logging.warning(
                 'Could not wrap RPC server in New Relic config. Exc: %s',

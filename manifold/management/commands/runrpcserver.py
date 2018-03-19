@@ -8,6 +8,10 @@ from manifold import rpc
 class Command(BaseCommand):
     """Run a development thrift server"""
 
+    def add_arguments(self, parser):
+        parser.add_argument('host', type=str, nargs='?', default='127.0.0.1')
+        parser.add_argument('port', type=int, nargs='?', default=9090)
+
     def handle(self, *args, **options):
         if os.environ.get('RUN_MAIN') == 'true':
             return
