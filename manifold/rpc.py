@@ -54,7 +54,7 @@ def _print_rpc_config(handler):
     __configured = True
 
 
-def create_processor():
+def get_rpc_application():
     """Creates a Gunicorn Thrift compatible TProcessor and initializes NewRelic
     """
     global __new_relic
@@ -92,7 +92,7 @@ def make_server(host="localhost", port=9090, unix_socket=None,
                 client_timeout=3000, certfile=None):
     """Creates a Thrift RPC server and serves it with configuration
     """
-    processor = create_processor()
+    processor = get_rpc_application()
 
     if unix_socket:
         server_socket = TServerSocket(unix_socket=unix_socket)
@@ -132,4 +132,4 @@ def make_client(key='default'):
     return thrift_client(load_service(key), host=host, port=port)
 
 
-app = create_processor()
+app = get_rpc_application()

@@ -3,6 +3,6 @@ testlint:
 	python3 runtests.py
 
 .PHONY: deploy
-deploy:
+deploy: testlint
 	python setup.py bdist_wheel
 	twine upload dist/*  --skip-existing
