@@ -36,6 +36,8 @@ def read(*parts):
 
 
 def find_info(*file_paths, info='version'):
+    """ Get __{info}__ from a list of file paths
+    """
     version_file = read(*file_paths)
     version_match = re.search(f"^__{info}__ = ['\"]([^'\"]*)['\"]",
                               version_file, re.M)
@@ -45,6 +47,11 @@ def find_info(*file_paths, info='version'):
 
 
 def confirm(prompt, expected=('yes', 'y')):
+    """ Prompts the user to continue with the script
+    :param prompt: What to show the user
+    :param expected: Valid answers to continue
+    :return:
+    """
     response = input(prompt + f": ({'/'.join(expected)}) ")
     if response.lower() not in expected:
         print("  Quitting due to invalid prompt answer.")
