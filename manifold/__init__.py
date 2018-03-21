@@ -1,3 +1,4 @@
-__title__ = 'Manifold'
-__version__ = '0.1'
-__author__ = 'Daniel Starner'
+__title__ = 'django-manifold'
+__version__ = '1.1'
+__author__ = 'ACV Auctions'
+__email__ = 'dstarner@acvauctions.com'
