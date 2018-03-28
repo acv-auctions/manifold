@@ -37,6 +37,16 @@ class ThriftValidator(forms.Form):
     def get(self, key, default=None):
         return self.cleaned_data.get(key, default)
 
+    def error_dict(self):
+        """
+        Required because Django's `ErrorDict` class does funky
+        things when used alone.
+        """
+        return {key: value for key, value in self.errors.items()}
+
+    def error_str(self):
+        return str(self.error_dict())
+
 
 class ThriftException(forms.ValidationError):
     pass
@@ -55,6 +65,11 @@ class I16Field(forms.IntegerField):
     MIN_VALUE = -32768
     MAX_VALUE = 32767
 
+    default_error_messages = {
+        'invalid': 'i16 field must be a whole number',
+        'required': 'i16 field required'
+    }
+
     def __init__(self, *args, **kwargs):
         kwargs['max_value'] = self.MAX_VALUE
         kwargs['min_value'] = self.MIN_VALUE
@@ -66,6 +81,11 @@ class I32Field(forms.IntegerField):
     MIN_VALUE = -2147483648
     MAX_VALUE = 2147483647
 
+    default_error_messages = {
+        'invalid': 'i32 field must be a whole number',
+        'required': 'i32 field required'
+    }
+
     def __init__(self, *args, **kwargs):
         kwargs['max_value'] = self.MAX_VALUE
         kwargs['min_value'] = self.MIN_VALUE
@@ -75,7 +95,10 @@ class I32Field(forms.IntegerField):
 class I64Field(forms.IntegerField):
     """No check needed, as pretty much any value will be less than max
     """
-    pass
+    default_error_messages = {
+        'invalid': 'i64 field must be a whole number',
+        'required': 'i64 field required'
+    }
 
 
 class BoolField(forms.BooleanField):
@@ -83,18 +106,33 @@ class BoolField(forms.BooleanField):
     Use `required=True` to force always true, or
     use `required=False` to force either T/F
     """
-    pass
+    default_error_messages = {
+        'invalid': 'bool field must be True / False',
+        'required': 'bool field required'
+    }
 
 
-class DoubleField(forms.IntegerField):
-    pass
+class DoubleField(forms.FloatField):
+
+    default_error_messages = {
+        'invalid': 'double field must be a whole or decimal number',
+        'required': 'double field required'
+    }
 
 
 class StringField(forms.CharField):
-    pass
+    default_error_messages = {
+        'invalid': 'string field must be a valid string',
+        'required': 'string field required'
+    }
 
 
 class ByteField(forms.IntegerField):
+
+    default_error_messages = {
+        'invalid': 'byte field must be a whole number between 0 and 255',
+        'required': 'byte field required'
+    }
 
     def __init__(self, **kwargs):
         kwargs['max_value'] = 255
