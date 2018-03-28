@@ -48,7 +48,7 @@ def _print_rpc_config(handler):
     global __configured
     if __configured:
         return
-    print('\n** Manifold RPC Function Mappings **')
+    print('\n** Manifold RPC --> Function Mappings **')
     handler.print_current_mappings()
     print()
     __configured = True
@@ -130,6 +130,3 @@ def make_client(key='default'):
     host = thrift_settings.get('host', '127.0.0.1')
     port = thrift_settings.get('port', 9090)
     return thrift_client(load_service(key), host=host, port=port)
-
-
-app = get_rpc_application()

@@ -52,7 +52,9 @@ class ServiceHandler:
 
     def print_current_mappings(self):
         for mapped_name in self.__mapped_names:
-            print(f'* {mapped_name} -- {getattr(self, mapped_name).__name__}')
+            func = getattr(self, mapped_name)
+            name = f'{func.__module__}.{func.__name__}'
+            print(f'* {mapped_name} -- {name}')
 
     def __getattribute__(self, name):
         """Overridden to set the New Relic transaction name if handler.
