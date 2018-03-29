@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 # pylint: disable=W0401,W0614
+import sys
 
 from django.conf.global_settings import *
 
@@ -30,6 +31,11 @@ INSTALLED_APPS = [
     'manifold',
     'tests.example_app'
 ]
+
+# HTTP Settings
+WSGI_APPLICATION = 'manifold.http.application'
+ROOT_URLCONF = 'manifold.http'
+
 MANIFOLD = {
     'default': {
         'file': 'tests/example.thrift',
@@ -40,5 +46,32 @@ MANIFOLD = {
         'service': 'DummyService',
         'host': '127.0.0.1',
         'port': 9090
+    }
+}
+
+# Logging Configuration
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(asctime)s %(levelname)s [%(name)s:%(lineno)s]'
+                      ' %(module)s %(process)d %(thread)d %(message)s'
+        }
+    },
+    'handlers': {
+        'default': {
+            'level': 'DEBUG' if DEBUG else 'INFO',
+            'class': 'logging.StreamHandler',
+            'stream': sys.stdout,
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        '': {
+            'handlers': ['default'],
+            'level': 'DEBUG' if DEBUG else 'INFO',
+            'propagate': True
+        },
     }
 }

@@ -40,18 +40,16 @@ from manifold.file import load_service
 django.setup()
 
 
-__configured = False
 __new_relic = False
 
 
-def _print_rpc_config(handler):
-    global __configured
-    if __configured:
+def _print_rpc_config():
+    if handler.configured:
         return
     print('\n** Manifold RPC --> Function Mappings **')
     handler.print_current_mappings()
     print()
-    __configured = True
+    handler.configured = True
 
 
 def get_rpc_application():
@@ -81,7 +79,7 @@ def get_rpc_application():
                 i_app
             )
 
-    _print_rpc_config(handler)
+    _print_rpc_config()
 
     return TProcessor(load_service(), handler)
 

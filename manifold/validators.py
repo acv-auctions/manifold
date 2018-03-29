@@ -30,9 +30,10 @@ class ThriftValidator(forms.Form):
         """Serializes Thrift struct if needed so it can be cleaned
         """
         self.struct = struct
+        self._errors = []
         if not isinstance(struct, dict):
             struct = serialize(struct)
-        super().__init__(struct, *args, **kwargs)
+        super().__init__(data=struct, *args, **kwargs)
 
     def get(self, key, default=None):
         return self.cleaned_data.get(key, default)

@@ -16,7 +16,7 @@ limitations under the License.
 from django.test import TestCase
 
 from manifold.file import load_module
-from manifold.serialize import serialize
+from manifold.serialize import serialize, deserialize
 
 
 class FileTestSuite(TestCase):
@@ -79,3 +79,20 @@ class SerializeTestSuite(TestCase):
 
         result = serialize(test_struct)
         self.assertEqual(result, expected)
+
+
+class DeserializeTestSuite(TestCase):
+
+    def test_deserialize_type(self):
+        ttype = load_module().ExampleStruct
+        data = {
+            'test_string': 'Hello World',
+            'test_bool': False
+        }
+
+        expected = load_module().ExampleStruct(
+            test_string='Hello World',
+            test_bool=False
+        )
+
+        self.assertEqual(expected, deserialize(data, ttype))

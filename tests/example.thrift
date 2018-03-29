@@ -34,5 +34,9 @@ struct ContainedStruct {
 }
 
 service ExampleService {
+    bool multiVarArgument(1: i16 val1, 2: i16 val2),
     bool pingPong(1: i16 val),
+    void pong(),
+    ContainedStruct simple(1: InnerStruct val) throws (1: ExampleException exc),
+    ContainedStruct complex(1: ContainedStruct val) throws (1: ExampleException exc),
 }

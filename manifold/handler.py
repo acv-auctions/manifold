@@ -28,6 +28,7 @@ class ServiceHandler:
     """
 
     instance = None
+    configured = False
 
     def __init__(self):
         self.__mapped_names = set()
@@ -55,6 +56,9 @@ class ServiceHandler:
             func = getattr(self, mapped_name)
             name = f'{func.__module__}.{func.__name__}'
             print(f'* {mapped_name} -- {name}')
+
+    def get_current_mappings(self):
+        return {name: getattr(self, name) for name in self.__mapped_names}
 
     def __getattribute__(self, name):
         """Overridden to set the New Relic transaction name if handler.
