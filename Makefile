@@ -1,3 +1,7 @@
+.PHONY: docs
+docs:
+	cd docs && make html
+
 .PHONY: testlint
 testlint:
 	python3 runtests.py
