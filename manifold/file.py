@@ -16,13 +16,19 @@ limitations under the License.
 from django.conf import settings
 import thriftpy
 
+_cached_modules = {}
+
 
 def load_module(key='default'):
     thrift = settings.MANIFOLD[key]
-    return thriftpy.load(
+    if key in _cached_modules:
+        return _cached_modules[key]
+    module = thriftpy.load(
         thrift['file'],
         module_name=thrift['file'].replace('.', '_')
     )
+    _cached_modules[key] = module
+    return module
 
 
 def load_service(key='default'):
