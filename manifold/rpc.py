@@ -17,6 +17,7 @@ import importlib
 import logging
 
 import django
+from django.apps import apps
 from django.conf import settings
 try:
     from newrelic import agent
@@ -36,8 +37,10 @@ from manifold.handler import handler
 from manifold.file import load_service
 
 
-# Ensure settings are read
-django.setup()
+def _init_django():
+    if not apps.ready and not settings.configured:
+        # Ensure settings are read
+        django.setup()
 
 
 __new_relic = False
@@ -58,6 +61,8 @@ def get_rpc_application():
     """Creates a Gunicorn Thrift compatible TProcessor and initializes NewRelic
     """
     global __new_relic
+
+    _init_django()
 
     if agent and not __new_relic:  # pragma: no cover
         try:
@@ -92,6 +97,8 @@ def make_server(host="localhost", port=9090, unix_socket=None,
                 client_timeout=3000, certfile=None):
     """Creates a Thrift RPC server and serves it with configuration
     """
+    _init_django()
+
     processor = get_rpc_application()
 
     if unix_socket:
@@ -123,9 +130,12 @@ def make_server(host="localhost", port=9090, unix_socket=None,
 
 def make_client(key='default'):
     """Creates a client to call functions with
+
     :param key: Settings key to create client with
     :return: Thriftpy client
     """
+    _init_django()
+
     thrift_settings = settings.MANIFOLD[key]
     host = thrift_settings.get('host', '127.0.0.1')
     port = thrift_settings.get('port', 9090)

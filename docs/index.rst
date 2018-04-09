@@ -24,6 +24,7 @@ Table of Contents
    src/validation
    src/conversion
    src/http
+   src/client
    readme
    contributing
    changelog

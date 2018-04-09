@@ -23,6 +23,7 @@ _cached_modules = {}
 
 def load_module(key='default'):
     """Loads a Python module to use Thrift defined structures and types
+
     :param key: The MANIFOLD settings key to use for configuration loading
     :return: A Python module that has the Thrift types/structs defined within it
     """
@@ -39,6 +40,7 @@ def load_module(key='default'):
 
 def load_service(key='default'):
     """Load a service using a MANIFOLD settings config
+
     :param key: which MANIFOLD settings config key to use
     :return: Python class of Thrift service desired
     """
