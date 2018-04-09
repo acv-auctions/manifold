@@ -7,3 +7,6 @@ install:
 # command to run tests
 script:
   - make check-travis
+
+notifications:
+  email: false
