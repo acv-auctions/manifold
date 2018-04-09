@@ -6,6 +6,8 @@ Thrift <==> Python Conversion
 If you are using Python as a Thrift server, then it would be very helpful to easily convert between Thrift structs and
 types versus Python instances and types. Manifold allows you to do this with ease.
 
+.. _conversion_to_python:
+
 Loading Thrift Modules in Python
 ********************************
 
