@@ -85,9 +85,9 @@ setup(
     author=find_info("manifold", "__init__.py", info='author'),
     author_email=find_info("manifold", "__init__.py", info='email'),
     install_requires=[
-        'Django==2.0.2',
-        'gunicorn-thrift==0.2.21',
-        'thriftpy==0.3.9'
+        'Django',
+        'gunicorn-thrift',
+        'thriftpy'
     ],
     classifiers=[
         'Environment :: Web Environment',

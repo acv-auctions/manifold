@@ -6,6 +6,10 @@ All changes will be reflected here in reverse chronological order going down the
 
 * No latest changes
 
+## Version 1.3.1
+
+Fixed requirements to not be as strict.
+
 ## Version 1.3
 
 * Updated Makefile to have linting and testing be separate.
