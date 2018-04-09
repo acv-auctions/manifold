@@ -1,0 +1,7 @@
+[run]
+omit=
+  */runrpcserver.py
+
+[report]
+skip_covered=True
+fail_under=85
