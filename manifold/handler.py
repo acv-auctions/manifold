@@ -29,10 +29,12 @@ class ServiceHandler:
 
     instance = None
     configured = False
+    __mapped_names = set()
 
-    def __init__(self):
-        # str list of mapped names to avoid conflict
-        self.__mapped_names = set()
+    def __new__(cls, *args, **kwargs):
+        instance = super(ServiceHandler, cls).__new__(cls)
+        instance.__mapped_names = set()
+        return instance
 
     def map_function(self, name):
         """Map a Python function to a Thrift function

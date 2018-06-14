@@ -66,10 +66,15 @@ def _handle_arg_function(handler_func, request, thrift_args):
     :param thrift_args: Thrift function arguments from the service.thrift_spec
     :return: Dictionary serialized response from RPC function
     """
+    try:
+        body = request.body.decode('utf-8')
+    except (UnicodeDecodeError, UnicodeError):
+        body = request.body
+
     try:  # Try to load any params given
-        data = json.loads(request.body)
+        data = json.loads(body)
     except ValueError as exc:
-        logger.warning(f'Could not parse JSON content: {str(exc)}')
+        logger.warning(f'Could not parse JSON content "{body}": {str(exc)}')
         data = None
 
     arguments = _parse_json_args_to_list(thrift_args, data)

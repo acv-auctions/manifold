@@ -1,5 +1,7 @@
 .. currentmodule:: manifold.rpc
 
+.. _rpc_client:
+
 RPC Client
 ----------
 
