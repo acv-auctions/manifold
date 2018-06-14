@@ -23,6 +23,7 @@ Table of Contents
    src/quickstart
    src/validation
    src/conversion
+   src/testing
    src/http
    src/client
    readme
