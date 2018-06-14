@@ -1,4 +1,3 @@
-import json
 import types
 
 from django.test import TestCase
@@ -19,8 +18,13 @@ class TestingUtilsTestSuite(TestCase):
 
     def test_http_client_call_invalid(self):
         _, http, _ = setup_test_env()
-        response = http.post('/pingPong', {'val': 5}).json()
+        response = http.send('/pingPong').json()
         self.assertEqual(response['response'], 'error')
+
+    def test_http_client_call_invalid_route(self):
+        _, http, _ = setup_test_env()
+        with self.assertRaises(ValueError):
+            http.send('pingPong', {'val': 5})
 
     def test_http_client_call_valid(self):
         _, http, _ = setup_test_env()

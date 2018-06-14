@@ -22,7 +22,15 @@ from manifold.handler import handler
 
 
 class RpcClient:
-    pass
+
+    IGNORED = ['configured', '_ServiceHandler__mapped_names']
+
+    def __init__(self, rpc_handler):
+        for attribute, value in vars(rpc_handler).items():
+            setattr(self, attribute, value)
+
+        for key in self.IGNORED:
+            delattr(self, key)
 
 
 class HttpClient(DjangoClient):
@@ -43,17 +51,4 @@ def setup_test_env(settings_key='default'):
     :param settings_key: Desired server to use
     :return: Tuple of RPC client, HTTP client, and thrift module
     """
-    client = _create_test_client()
-    return client, HttpClient(), load_module(settings_key)
-
-
-def _create_test_client():
-    ignored = ['configured', '_ServiceHandler__mapped_names']
-
-    client = RpcClient()
-    for attribute, value in vars(handler).items():
-        setattr(client, attribute, value)
-
-    for key in ignored:
-        delattr(client, key)
-    return client
+    return RpcClient(handler), HttpClient(), load_module(settings_key)

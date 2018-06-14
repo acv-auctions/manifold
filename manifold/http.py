@@ -68,7 +68,7 @@ def _handle_arg_function(handler_func, request, thrift_args):
     """
     try:
         body = request.body.decode('utf-8')
-    except Exception:
+    except (UnicodeDecodeError, UnicodeError):
         body = request.body
 
     try:  # Try to load any params given
