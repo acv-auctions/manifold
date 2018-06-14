@@ -23,14 +23,12 @@ from manifold.handler import handler
 
 class RpcClient:
 
-    IGNORED = ['configured', '_ServiceHandler__mapped_names']
+    IGNORED = ['configured', '_ServiceHandler__mapped_names', '__mapped_names']
 
     def __init__(self, rpc_handler):
         for attribute, value in vars(rpc_handler).items():
-            setattr(self, attribute, value)
-
-        for key in self.IGNORED:
-            delattr(self, key)
+            if attribute not in self.IGNORED:
+                setattr(self, attribute, value)
 
 
 class HttpClient(DjangoClient):
