@@ -27,9 +27,9 @@ pylint==1.8.2
 pyparsing==2.2.0
 pytest==3.4.2
 pytz==2018.3
-PyYAML==3.12
+pyyaml>=4.2b1
 recommonmark==0.4.0
-requests==2.18.4
+requests>=2.20.0
 setproctitle==1.1.10
 six==1.11.0
 snowballstemmer==1.2.1
@@ -38,6 +38,6 @@ sphinx-autobuild==0.7.1
 sphinx-rtd-theme==0.2.4
 sphinxcontrib-websupport==1.0.1
 tornado==5.0.1
-urllib3==1.22
+urllib3>=1.23
 watchdog==0.8.3
 wrapt==1.10.11
